@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ừm</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #fff;
+      --text: #000;
+      --input-bg: #f2f2f7;
+      --border: #ccc;
+      --button-bg: #007aff;
+      --button-active: #0051cc;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1c1c1e;
+        --text: #f2f2f7;
+        --input-bg: #2c2c2e;
+        --border: #444;
+      }
+    }
+    body {
+      margin: 0;
+      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    h1 {
+      font-size: 1.2rem;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    input, textarea, button {
+      width: 100%;
+      font-size: 1.05rem;
+      padding: 12px;
+      margin-bottom: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--input-bg);
+      color: var(--text);
+      box-sizing: border-box;
+      font-family: inherit;
+    }
+    textarea {
+      height: 140px;
+      resize: none;
+    }
+    button {
+      background-color: var(--button-bg);
+      color: white;
+      font-weight: 500;
+      border: none;
+    }
+    button:active {
+      background-color: var(--button-active);
+    }
+  </style>
+</head>
+<body>
+  <h1>unicode test</h1>
+  <input id="input" placeholder="vào">
+  <textarea id="output" readonly placeholder="ra"></textarea>
+  <button id="copy">copy</button>
+
+  <script>
+    const input = document.getElementById('input');
+    const output = document.getElementById('output');
+    const copyBtn = document.getElementById('copy');
+
+    const italicMap = {};
+    const aCode = 'a'.codePointAt(0);
+    const ACode = 'A'.codePointAt(0);
+    for (let i = 0; i < 26; i++) {
+      italicMap[String.fromCharCode(aCode + i)] = String.fromCodePoint(0x1D44E + i);
+      italicMap[String.fromCharCode(ACode + i)] = String.fromCodePoint(0x1D434 + i);
+    }
+
+    const accentMap = {
+      // thường
+      "á": ["a", "\u0301"], "à": ["a", "\u0300"], "ả": ["a", "\u0309"], "ã": ["a", "\u0303"], "ạ": ["a", "\u0323"],
+      "ă": ["a", "\u0306"], "ắ": ["a", "\u0306", "\u0301"], "ằ": ["a", "\u0306", "\u0300"],
+      "ẳ": ["a", "\u0306", "\u0309"], "ẵ": ["a", "\u0306", "\u0303"], "ặ": ["a", "\u0306", "\u0323"],
+      "â": ["a", "\u0302"], "ấ": ["a", "\u0302", "\u0301"], "ầ": ["a", "\u0302", "\u0300"],
+      "ẩ": ["a", "\u0302", "\u0309"], "ẫ": ["a", "\u0302", "\u0303"], "ậ": ["a", "\u0302", "\u0323"],
+      "đ": ["d"],
+
+      "é": ["e", "\u0301"], "è": ["e", "\u0300"], "ẻ": ["e", "\u0309"], "ẽ": ["e", "\u0303"], "ẹ": ["e", "\u0323"],
+      "ê": ["e", "\u0302"], "ế": ["e", "\u0302", "\u0301"], "ề": ["e", "\u0302", "\u0300"],
+      "ể": ["e", "\u0302", "\u0309"], "ễ": ["e", "\u0302", "\u0303"], "ệ": ["e", "\u0302", "\u0323"],
+
+      "í": ["i", "\u0301"], "ì": ["i", "\u0300"], "ỉ": ["i", "\u0309"], "ĩ": ["i", "\u0303"], "ị": ["i", "\u0323"],
+
+      "ó": ["o", "\u0301"], "ò": ["o", "\u0300"], "ỏ": ["o", "\u0309"], "õ": ["o", "\u0303"], "ọ": ["o", "\u0323"],
+      "ô": ["o", "\u0302"], "ố": ["o", "\u0302", "\u0301"], "ồ": ["o", "\u0302", "\u0300"],
+      "ổ": ["o", "\u0302", "\u0309"], "ỗ": ["o", "\u0302", "\u0303"], "ộ": ["o", "\u0302", "\u0323"],
+      "ơ": ["o", "\u031B"], "ớ": ["o", "\u031B", "\u0301"], "ờ": ["o", "\u031B", "\u0300"],
+      "ở": ["o", "\u031B", "\u0309"], "ỡ": ["o", "\u031B", "\u0303"], "ợ": ["o", "\u031B", "\u0323"],
+
+      "ú": ["u", "\u0301"], "ù": ["u", "\u0300"], "ủ": ["u", "\u0309"], "ũ": ["u", "\u0303"], "ụ": ["u", "\u0323"],
+      "ư": ["u", "\u031B"], "ứ": ["u", "\u031B", "\u0301"], "ừ": ["u", "\u031B", "\u0300"],
+      "ử": ["u", "\u031B", "\u0309"], "ữ": ["u", "\u031B", "\u0303"], "ự": ["u", "\u031B", "\u0323"],
+
+      "ý": ["y", "\u0301"], "ỳ": ["y", "\u0300"], "ỷ": ["y", "\u0309"], "ỹ": ["y", "\u0303"], "ỵ": ["y", "\u0323"],
+
+      // hoa
+      "Á": ["A", "\u0301"], "À": ["A", "\u0300"], "Ả": ["A", "\u0309"], "Ã": ["A", "\u0303"], "Ạ": ["A", "\u0323"],
+      "Ă": ["A", "\u0306"], "Ắ": ["A", "\u0306", "\u0301"], "Ằ": ["A", "\u0306", "\u0300"],
+      "Ẳ": ["A", "\u0306", "\u0309"], "Ẵ": ["A", "\u0306", "\u0303"], "Ặ": ["A", "\u0306", "\u0323"],
+      "Â": ["A", "\u0302"], "Ấ": ["A", "\u0302", "\u0301"], "Ầ": ["A", "\u0302", "\u0300"],
+      "Ẩ": ["A", "\u0302", "\u0309"], "Ẫ": ["A", "\u0302", "\u0303"], "Ậ": ["A", "\u0302", "\u0323"],
+      "Đ": ["D"],
+
+      "É": ["E", "\u0301"], "È": ["E", "\u0300"], "Ẻ": ["E", "\u0309"], "Ẽ": ["E", "\u0303"], "Ẹ": ["E", "\u0323"],
+      "Ê": ["E", "\u0302"], "Ế": ["E", "\u0302", "\u0301"], "Ề": ["E", "\u0302", "\u0300"],
+      "Ể": ["E", "\u0302", "\u0309"], "Ễ": ["E", "\u0302", "\u0303"], "Ệ": ["E", "\u0302", "\u0323"],
+
+      "Í": ["I", "\u0301"], "Ì": ["I", "\u0300"], "Ỉ": ["I", "\u0309"], "Ĩ": ["I", "\u0303"], "Ị": ["I", "\u0323"],
+
+      "Ó": ["O", "\u0301"], "Ò": ["O", "\u0300"], "Ỏ": ["O", "\u0309"], "Õ": ["O", "\u0303"], "Ọ": ["O", "\u0323"],
+      "Ô": ["O", "\u0302"], "Ố": ["O", "\u0302", "\u0301"], "Ồ": ["O", "\u0302", "\u0300"],
+      "Ổ": ["O", "\u0302", "\u0309"], "Ỗ": ["O", "\u0302", "\u0303"], "Ộ": ["O", "\u0302", "\u0323"],
+      "Ơ": ["O", "\u031B"], "Ớ": ["O", "\u031B", "\u0301"], "Ờ": ["O", "\u031B", "\u0300"],
+      "Ở": ["O", "\u031B", "\u0309"], "Ỡ": ["O", "\u031B", "\u0303"], "Ợ": ["O", "\u031B", "\u0323"],
+
+      "Ú": ["U", "\u0301"], "Ù": ["U", "\u0300"], "Ủ": ["U", "\u0309"], "Ũ": ["U", "\u0303"], "Ụ": ["U", "\u0323"],
+      "Ư": ["U", "\u031B"], "Ứ": ["U", "\u031B", "\u0301"], "Ừ": ["U", "\u031B", "\u0300"],
+      "Ử": ["U", "\u031B", "\u0309"], "Ữ": ["U", "\u031B", "\u0303"], "Ự": ["U", "\u031B", "\u0323"],
+
+      "Ý": ["Y", "\u0301"], "Ỳ": ["Y", "\u0300"], "Ỷ": ["Y", "\u0309"], "Ỹ": ["Y", "\u0303"], "Ỵ": ["Y", "\u0323"]
+    };
+
+    function convert(text) {
+      return Array.from(text).map(ch => {
+        if (accentMap[ch]) {
+          const [base, ...marks] = accentMap[ch];
+          const baseItalic = italicMap[base] || base;
+          return baseItalic + marks.join('');
+        }
+        return italicMap[ch] || ch;
+      }).join('');
+    }
+
+    input.addEventListener('input', () => {
+      output.value = convert(input.value);
+    });
+
+    copyBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(output.value);
+        copyBtn.textContent = 'oke!';
+        setTimeout(() => copyBtn.textContent = 'copy', 1500);
+      } catch {
+        alert('copy ko thành công 💔');
+      }
+    });
+  </script>
+</body>
+</html>
